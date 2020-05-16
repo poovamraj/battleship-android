@@ -3,14 +3,13 @@ package com.battleship.server.game.controller
 import com.battleship.server.game.common.GameIdGenerator
 import com.battleship.server.websocket.GameConnection
 
-class Lobby(val rooms: ArrayList<Room>, private val idGenerator: GameIdGenerator){
+class Lobby(val rooms: ArrayList<Room>, private val idGenerator: GameIdGenerator) {
 
     fun createNewRoom(gridSize: Int, noOfSteps: Int): Room? {
-        for (i in 0.. 1000){
+        for (i in 0..1000) {
             val id = idGenerator.getId()
-            if(rooms.none { it.id == id }) {
-                val room =
-                    Room(gridSize, noOfSteps, ArrayList(), id)
+            if (rooms.none { it.id == id }) {
+                val room = Room(gridSize, noOfSteps, ArrayList(), id)
                 rooms.add(room)
                 return room
             }
@@ -25,34 +24,34 @@ class Room(
     val noOfSteps: Int,
     val players: ArrayList<Player>,
     val id: Long
-){
-    fun addPlayer(player: Player){
-        if(!isFull()){
+) {
+    fun addPlayer(player: Player) {
+        if (!isFull()) {
             players.add(player)
         }
     }
 
-    fun broadcastToAllPlayers(message: String){
+    fun broadcastToAllPlayers(message: String) {
         players.forEach { it.sendMessage(message) }
     }
 
-    fun isFull(): Boolean{
+    fun isFull(): Boolean {
         return players.size >= 2
     }
 }
 
-class Player(val gameConnection: GameConnection){
+class Player(val gameConnection: GameConnection) {
     private var readyToStartGame = false
 
-    fun readyToStartGame(){
+    fun readyToStartGame() {
         readyToStartGame = true
     }
 
-    fun isReadyToStartGame(): Boolean{
+    fun isReadyToStartGame(): Boolean {
         return readyToStartGame
     }
 
-    fun sendMessage(string: String){
+    fun sendMessage(string: String) {
         gameConnection.send(string)
     }
 }

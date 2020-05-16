@@ -5,9 +5,10 @@ import com.battleship.server.websocket.GameConnection
 import com.battleship.server.websocket.GameServer
 
 
-class BattleShipServer(private val server: GameServer, private val controller: GameController): GameServer.ServerEvents{
+class BattleShipServer(private val server: GameServer, private val controller: GameController) :
+    GameServer.ServerEvents {
 
-    fun start(){
+    fun start() {
         server.setEvents(this)
         server.start()
     }

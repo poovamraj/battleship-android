@@ -12,7 +12,7 @@ import com.battleship.server.websocket.thirdparty.JavaWebSocket
 object Application {
 
     @JvmStatic
-    fun main(args: Array<String>){
+    fun main(args: Array<String>) {
         val game = BattleShipServer(
             ServiceLocator.server,
             ServiceLocator.gameController

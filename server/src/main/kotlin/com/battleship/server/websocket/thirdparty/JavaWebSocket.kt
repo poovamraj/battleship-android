@@ -6,7 +6,7 @@ import org.java_websocket.handshake.ClientHandshake
 import org.java_websocket.server.WebSocketServer
 import java.net.InetSocketAddress
 
-class JavaWebSocket(private val hostname: String, private val port: Int): GameServer {
+class JavaWebSocket(private val hostname: String, private val port: Int) : GameServer {
 
     private val libSocket = WebSocket(InetSocketAddress(hostname, port))
 

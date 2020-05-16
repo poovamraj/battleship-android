@@ -3,7 +3,7 @@ package com.battleship.server.websocket.thirdparty
 import com.battleship.server.websocket.GameConnection
 import org.java_websocket.WebSocket
 
-class WebSocketConnection(private val webSocket: WebSocket): GameConnection {
+class WebSocketConnection(private val webSocket: WebSocket) : GameConnection {
 
     private var events: GameConnection.Events? = null
 

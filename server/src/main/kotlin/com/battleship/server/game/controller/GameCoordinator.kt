@@ -17,15 +17,15 @@ class GameCoordinator(private val lobby: Lobby) {
 
     fun joinRoom(id: Long, gameConnection: GameConnection): Error? {
         val room = lobby.rooms.find { it.id == id } ?: return ROOM_NOT_FOUND
-        if(!room.isFull()){
+        if (!room.isFull()) {
             room.addPlayer(createPlayer(gameConnection))
             return null
         }
         return ROOM_FULL
     }
 
-    fun findRoom(connection: GameConnection): Room?{
-        return lobby.rooms.find { it.players.find { player -> player.gameConnection == connection } != null}
+    fun findRoom(connection: GameConnection): Room? {
+        return lobby.rooms.find { it.players.find { player -> player.gameConnection == connection } != null }
     }
 
 
@@ -34,14 +34,14 @@ class GameCoordinator(private val lobby: Lobby) {
     }
 
     fun findPlayer(connection: GameConnection): Player? {
-        return findPlayer(findRoom(connection)!!,connection)
+        return findPlayer(findRoom(connection)!!, connection)
     }
 
     fun findRoom(id: Long): Room? {
-        return  lobby.rooms.find { it.id == id }
+        return lobby.rooms.find { it.id == id }
     }
 
-    fun canStartGame(id: Long): Boolean{
+    fun canStartGame(id: Long): Boolean {
         val room = lobby.rooms.find { it.id == id }
         return room?.isFull() ?: false
     }
