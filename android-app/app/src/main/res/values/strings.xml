@@ -1,6 +1,15 @@
 <resources>
     <string name="app_name">Battleship</string>
 
+    <!-- Used in room activity-->
+    <string name="create_room">Create Room</string>
+    <string name="join_room">Join Room</string>
+    <string name="play_bot">Play Bot</string>
+    <string name="play_online">Play Online</string>
+    <string name="hostname_hint">Hostname (192.168.1.12)</string>
+    <string name="port_hint">Port</string>
+    <string name="room_id_hint">Enter Room ID</string>
+
     <!-- Used in game activity -->
     <string name="position_ships">Position Ships - Tap to rotate &amp; Long press to move</string>
     <string name="place_chose_ship">Place the selected ship by tapping on a cell</string>

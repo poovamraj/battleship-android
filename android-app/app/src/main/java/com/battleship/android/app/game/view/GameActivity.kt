@@ -19,6 +19,15 @@ import kotlinx.android.synthetic.main.activity_game.*
 class GameActivity : AppCompatActivity() {
 
     companion object {
+
+        const val CREATE_ROOM_MODE = 1
+        const val JOIN_ROOM_MODE = 2
+        const val PLAY_BOT = 3
+
+        const val GAME_MODE_KEY = "GAME_MODE"
+        const val HOSTNAME_KEY = "HOSTNAME"
+        const val PORT_KEY = "PORT"
+
         fun constructBotViewModel(activity: GameActivity, oceanGrid: Grid, targetGrid: Grid): GameViewModel {
             val game = BotGame(
                 oceanGrid,

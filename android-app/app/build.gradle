@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 29
@@ -40,6 +41,10 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview-selection:1.1.0-rc01"
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation "androidx.viewpager2:viewpager2:1.0.0" //since ViewPager is deprecated
+    def lifecycle_version = "2.2.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
+    kapt "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
 
     /**
      * Network related libs Websocket and Gson for parsing
