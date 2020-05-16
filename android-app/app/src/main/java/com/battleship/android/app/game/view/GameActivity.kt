@@ -10,8 +10,12 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.battleship.android.app.R
 import com.battleship.android.app.game.model.bot.BotGame
 import com.battleship.android.app.game.model.GameConfig
+import com.battleship.android.app.game.model.online.OnlineGame
 import com.battleship.android.app.game.viewmodel.GameViewModel
 import com.battleship.android.app.game.viewmodel.GameViewModelFactory
+import com.battleship.android.app.game.viewmodel.OnlineGameViewModel
+import com.battleship.android.app.game.viewmodel.OnlineGameViewModelFactory
+import com.battleship.android.websocketclient.WebSocketBuilder
 import com.battleship.core.*
 import kotlinx.android.synthetic.main.activity_game.*
 
@@ -19,7 +23,6 @@ import kotlinx.android.synthetic.main.activity_game.*
 class GameActivity : AppCompatActivity() {
 
     companion object {
-
         const val CREATE_ROOM_MODE = 1
         const val JOIN_ROOM_MODE = 2
         const val PLAY_BOT = 3
@@ -28,17 +31,32 @@ class GameActivity : AppCompatActivity() {
         const val HOSTNAME_KEY = "HOSTNAME"
         const val PORT_KEY = "PORT"
 
-        fun constructBotViewModel(activity: GameActivity, oceanGrid: Grid, targetGrid: Grid): GameViewModel {
-            val game = BotGame(
-                oceanGrid,
-                targetGrid
-            )
+        fun constructBotViewModel(
+            activity: GameActivity,
+            oceanGrid: Grid,
+            targetGrid: Grid
+        ): GameViewModel {
+            val game = BotGame(oceanGrid, targetGrid)
             return ViewModelProvider(
                 activity,
-                GameViewModelFactory(
-                    game
-                )
+                GameViewModelFactory(game)
             ).get(GameViewModel::class.java)
+        }
+
+        fun constructOnlineGameViewModel(
+            activity: GameActivity,
+            hostName: String,
+            port: Int,
+            oceanGrid: Grid,
+            targetGrid: Grid,
+            createGame: Boolean
+        ): GameViewModel {
+            val webSocketClient = WebSocketBuilder.createClient(hostName, port)
+            val repo = OnlineGame(webSocketClient, oceanGrid, targetGrid)
+            return ViewModelProvider(
+                activity,
+                OnlineGameViewModelFactory(repo, createGame)
+            ).get(OnlineGameViewModel::class.java)
         }
     }
 
@@ -51,6 +69,11 @@ class GameActivity : AppCompatActivity() {
 
         val gridSize = GameConfig.GRID_SIZE
 
+        //Intent parsing
+        val gameMode = intent.getIntExtra(GAME_MODE_KEY, PLAY_BOT)
+        val hostName = intent.getStringExtra(HOSTNAME_KEY) ?: ""
+        val port = intent.getIntExtra(PORT_KEY, 0)
+
         /*
         Viewmodel and model objects are constructed
         in future we can move this to DI
@@ -58,12 +81,18 @@ class GameActivity : AppCompatActivity() {
         val oceanGrid = GridBuilder.createGrid(gridSize, GameConfig.createShips())
         val targetGrid = GridBuilder.createGrid(gridSize, GameConfig.createShips())
 
-        viewModel =
-            constructBotViewModel(
+        viewModel = if (gameMode == PLAY_BOT) {
+            constructBotViewModel(this, oceanGrid, targetGrid)
+        } else {
+            constructOnlineGameViewModel(
                 this,
+                hostName,
+                port,
                 oceanGrid,
-                targetGrid
+                targetGrid,
+                gameMode == CREATE_ROOM_MODE
             )
+        }
 
         /*
         Declaring Ocean Grid and Target Grid adapters
@@ -78,20 +107,15 @@ class GameActivity : AppCompatActivity() {
 
         gameHolder.adapter = BaseGridHolder(
             arrayListOf(
-                GridHolderDataSet(
-                    GridLayoutManager(this, gridSize),
-                    oceanAdapter
-                ),
-                GridHolderDataSet(
-                    GridLayoutManager(this, gridSize),
-                    targetAdapter
-                )
+                GridHolderDataSet(GridLayoutManager(this, gridSize), oceanAdapter),
+                GridHolderDataSet(GridLayoutManager(this, gridSize), targetAdapter)
             )
         )
 
         /*
          Setting all the observables
          */
+        observeOnlineGameData()
 
         gameHolder.isUserInputEnabled = false
 
@@ -117,8 +141,21 @@ class GameActivity : AppCompatActivity() {
         viewModel.initialize()
     }
 
-    private fun showShipCannotBePlacedError(reason: ShipPlacingResult){
-        val message = when(reason){
+    private fun observeOnlineGameData() {
+        val viewModel = viewModel
+        if (viewModel is OnlineGameViewModel) {
+            viewModel.getRoomIdObservable().observe(this) {
+                titleTextView.text = String.format(getString(R.string.room_id_guide, it))
+            }
+
+            viewModel.onJoinRoomFailed = { error ->
+                Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun showShipCannotBePlacedError(reason: ShipPlacingResult) {
+        val message = when (reason) {
             ShipPlacingResult.OutOfBoundary -> getString(R.string.cannot_place_out_of_boundary)
             ShipPlacingResult.InUse -> getString(R.string.cannot_place_in_use)
             ShipPlacingResult.Placed -> getString(R.string.placed_successfully)
@@ -127,8 +164,32 @@ class GameActivity : AppCompatActivity() {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
-    private fun positionShipsView(placementMode: Boolean){
+    private fun createRoomView() {
+        titleTextView.text = getString(R.string.room_creation_in_progress)
+        roomIdInput.visibility = View.GONE
+        gameHolder.visibility = View.GONE
+        actionButton.visibility = View.GONE
+        secondaryButton.visibility = View.GONE
+    }
+
+    private fun joinRoomView() {
+        titleTextView.text = getString(R.string.enter_room_id)
+        roomIdInput.visibility = View.VISIBLE
+        gameHolder.visibility = View.GONE
+        actionButton.visibility = View.VISIBLE
+        secondaryButton.visibility = View.GONE
+        actionButton.text = getString(R.string.join)
+        actionButton.setOnClickListener {
+            val viewModel = viewModel
+            if (viewModel is OnlineGameViewModel) {
+                viewModel.joinRoom(roomIdInput.text.toString().toLong())
+            }
+        }
+    }
+
+    private fun positionShipsView(placementMode: Boolean) {
         gameHolder.currentItem = 0
+        roomIdInput.visibility = View.GONE
         gameHolder.visibility = View.VISIBLE
         titleTextView.text = getString(R.string.position_ships)
         actionButton.text = getString(R.string.start_game)
@@ -148,27 +209,27 @@ class GameActivity : AppCompatActivity() {
         }
     }
 
-    private fun waitingForOpponentView(){
+    private fun waitingForOpponentView() {
         titleTextView.text = getString(R.string.waiting_for_opponent)
         actionButton.visibility = View.GONE
         secondaryButton.visibility = View.GONE
     }
 
-    private fun playerTurnView(){
+    private fun playerTurnView() {
         actionButton.visibility = View.GONE
         secondaryButton.visibility = View.GONE
         gameHolder.currentItem = 1
         titleTextView.text = getString(R.string.firing_guide)
     }
 
-    private fun opponentTurnView(){
+    private fun opponentTurnView() {
         actionButton.visibility = View.GONE
         secondaryButton.visibility = View.GONE
         gameHolder.currentItem = 0
         titleTextView.text = getString(R.string.opponent_turn)
     }
 
-    private fun gameEndView(title: String){
+    private fun gameEndView(title: String) {
         titleTextView.text = title
         actionButton.visibility = View.VISIBLE
         actionButton.text = getString(R.string.home)
@@ -177,18 +238,29 @@ class GameActivity : AppCompatActivity() {
         }
     }
 
-    private fun opponentTakingFireView(){
+    private fun opponentTakingFireView() {
         titleTextView.text = getString(R.string.your_shot)
         gameHolder.currentItem = 1
     }
 
-    private fun playerTakingFireView(){
+    private fun playerTakingFireView() {
         titleTextView.text = getString(R.string.opponent_shot)
         gameHolder.currentItem = 0
     }
 
-    private fun processGameState(gameState: GameViewModel.GameState, oceanAdapter: GridAdapter, targetAdapter: GridAdapter){
+    private fun processGameState(
+        gameState: GameViewModel.GameState,
+        oceanAdapter: GridAdapter,
+        targetAdapter: GridAdapter
+    ) {
         when (gameState) {
+            GameViewModel.GameState.CreateRoom -> {
+                createRoomView()
+            }
+
+            GameViewModel.GameState.JoinRoom -> {
+                joinRoomView()
+            }
 
             is GameViewModel.GameState.PositionShips -> {
                 positionShipsView(gameState.placementMode)
@@ -239,7 +311,6 @@ class GameActivity : AppCompatActivity() {
     }
 
 
-
     private fun getOceanAdapter(gridSize: Int): GridAdapter {
         val oceanAdapter = GridAdapter(
             gridSize,
@@ -258,7 +329,12 @@ class GameActivity : AppCompatActivity() {
                 )
             }
 
-            override fun onClick(longClickMode: Boolean, x: Int, y: Int, cellState: CellState): Boolean {
+            override fun onClick(
+                longClickMode: Boolean,
+                x: Int,
+                y: Int,
+                cellState: CellState
+            ): Boolean {
                 return viewModel.onGridTapped(viewModel.getOceanGrid(), longClickMode, x, y)
             }
 

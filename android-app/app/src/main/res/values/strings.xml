@@ -11,6 +11,9 @@
     <string name="room_id_hint">Enter Room ID</string>
 
     <!-- Used in game activity -->
+    <string name="room_id_guide">Guide user to enter the room id - %1$d</string>
+    <string name="room_creation_in_progress">Creating Room</string>
+    <string name="enter_room_id">Enter the Room Id</string>
     <string name="position_ships">Position Ships - Tap to rotate &amp; Long press to move</string>
     <string name="place_chose_ship">Place the selected ship by tapping on a cell</string>
     <string name="cannot_place_out_of_boundary">Cannot place - Ship goes out of boundary</string>
