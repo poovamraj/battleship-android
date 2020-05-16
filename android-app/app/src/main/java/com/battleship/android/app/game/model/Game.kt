@@ -1,4 +1,4 @@
-package com.battleship.android.app.model
+package com.battleship.android.app.game.model
 
 import com.battleship.core.Grid
 import com.battleship.core.Position

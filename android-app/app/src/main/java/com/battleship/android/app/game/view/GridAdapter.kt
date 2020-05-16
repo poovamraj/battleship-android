@@ -1,4 +1,4 @@
-package com.battleship.android.app.view
+package com.battleship.android.app.game.view
 
 import android.view.LayoutInflater
 import android.view.View

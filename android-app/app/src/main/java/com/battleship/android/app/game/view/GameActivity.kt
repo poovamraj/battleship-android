@@ -1,4 +1,4 @@
-package com.battleship.android.app.view
+package com.battleship.android.app.game.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -8,10 +8,10 @@ import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.battleship.android.app.R
-import com.battleship.android.app.model.bot.BotGame
-import com.battleship.android.app.model.GameConfig
-import com.battleship.android.app.viewmodel.GameViewModel
-import com.battleship.android.app.viewmodel.GameViewModelFactory
+import com.battleship.android.app.game.model.bot.BotGame
+import com.battleship.android.app.game.model.GameConfig
+import com.battleship.android.app.game.viewmodel.GameViewModel
+import com.battleship.android.app.game.viewmodel.GameViewModelFactory
 import com.battleship.core.*
 import kotlinx.android.synthetic.main.activity_game.*
 
@@ -26,7 +26,9 @@ class GameActivity : AppCompatActivity() {
             )
             return ViewModelProvider(
                 activity,
-                GameViewModelFactory(game)
+                GameViewModelFactory(
+                    game
+                )
             ).get(GameViewModel::class.java)
         }
     }
@@ -47,7 +49,12 @@ class GameActivity : AppCompatActivity() {
         val oceanGrid = GridBuilder.createGrid(gridSize, GameConfig.createShips())
         val targetGrid = GridBuilder.createGrid(gridSize, GameConfig.createShips())
 
-        viewModel = constructBotViewModel(this, oceanGrid, targetGrid)
+        viewModel =
+            constructBotViewModel(
+                this,
+                oceanGrid,
+                targetGrid
+            )
 
         /*
         Declaring Ocean Grid and Target Grid adapters
@@ -62,8 +69,14 @@ class GameActivity : AppCompatActivity() {
 
         gameHolder.adapter = BaseGridHolder(
             arrayListOf(
-                GridHolderDataSet(GridLayoutManager(this, gridSize), oceanAdapter),
-                GridHolderDataSet(GridLayoutManager(this, gridSize), targetAdapter)
+                GridHolderDataSet(
+                    GridLayoutManager(this, gridSize),
+                    oceanAdapter
+                ),
+                GridHolderDataSet(
+                    GridLayoutManager(this, gridSize),
+                    targetAdapter
+                )
             )
         )
 
@@ -218,7 +231,7 @@ class GameActivity : AppCompatActivity() {
 
 
 
-    private fun getOceanAdapter(gridSize: Int): GridAdapter{
+    private fun getOceanAdapter(gridSize: Int): GridAdapter {
         val oceanAdapter = GridAdapter(
             gridSize,
             true,
@@ -247,7 +260,7 @@ class GameActivity : AppCompatActivity() {
         return oceanAdapter
     }
 
-    private fun getTargetGridAdapter(gridSize: Int): GridAdapter{
+    private fun getTargetGridAdapter(gridSize: Int): GridAdapter {
         val targetAdapter = GridAdapter(
             gridSize,
             false,

@@ -1,4 +1,4 @@
-package com.battleship.android.app.view
+package com.battleship.android.app.game.view
 
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +15,9 @@ class BaseGridHolder(private val dataSet: ArrayList<GridHolderDataSet>) : Recycl
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GridHolder {
         val grid = LayoutInflater.from(parent.context).inflate(R.layout.grid, parent, false)
-        return GridHolder(grid)
+        return GridHolder(
+            grid
+        )
     }
 
     override fun getItemCount(): Int {

@@ -1,6 +1,6 @@
-package com.battleship.android.app.model.online
+package com.battleship.android.app.game.model.online
 
-import com.battleship.android.app.model.DamageReport
+import com.battleship.android.app.game.model.DamageReport
 import com.battleship.core.Position
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -58,7 +58,12 @@ const val JOIN_ROOM = "join_room"
 const val JOIN_ROOM_FAILED = "join_room_failed"
 
 fun constructJoinRoomProtocol(roomId: Long): String{
-    return gson.toJson(Protocol(JOIN_ROOM, RoomMessage(roomId)))
+    return gson.toJson(
+        Protocol(
+            JOIN_ROOM,
+            RoomMessage(roomId)
+        )
+    )
 }
 
 fun parseJoinRoomFailed(message: String): Error {

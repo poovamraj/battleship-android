@@ -1,4 +1,4 @@
-package com.battleship.android.app.model
+package com.battleship.android.app.game.model
 
 import com.battleship.core.CellState
 import com.battleship.core.Grid
@@ -8,7 +8,11 @@ import com.battleship.core.Result
 data class DamageReport(val hit: ArrayList<Position>, val miss: ArrayList<Position>, val sunk:ArrayList<ArrayList<Position>>)
 
 fun setDamageOnGrid(grid: Grid, positions: ArrayList<Position>): DamageReport {
-    val damageReport = DamageReport(arrayListOf(), arrayListOf(), arrayListOf())
+    val damageReport = DamageReport(
+        arrayListOf(),
+        arrayListOf(),
+        arrayListOf()
+    )
     positions.forEach { position ->
         val (x, y) = position
 

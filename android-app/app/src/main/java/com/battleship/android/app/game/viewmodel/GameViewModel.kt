@@ -1,14 +1,14 @@
-package com.battleship.android.app.viewmodel
+package com.battleship.android.app.game.viewmodel
 
 import android.os.Handler
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.battleship.android.app.model.DamageReport
-import com.battleship.android.app.model.Game
-import com.battleship.android.app.model.GameConfig
-import com.battleship.android.app.model.online.OnlineGame
+import com.battleship.android.app.game.model.DamageReport
+import com.battleship.android.app.game.model.Game
+import com.battleship.android.app.game.model.GameConfig
+import com.battleship.android.app.game.model.online.OnlineGame
 import com.battleship.core.*
 
 class OnlineGameViewModel(private val onlinePlayer: OnlineGame, private val createRoom: Boolean) : GameViewModel(onlinePlayer){
@@ -31,10 +31,12 @@ class OnlineGameViewModel(private val onlinePlayer: OnlineGame, private val crea
         super.onGameInitialized()
         socketInitialized = true
         if(createRoom){
-            gameState.value = GameState.CreateRoom
+            gameState.value =
+                GameState.CreateRoom
             createRoom()
         } else {
-            gameState.value = GameState.JoinRoom
+            gameState.value =
+                GameState.JoinRoom
         }
     }
 
@@ -152,7 +154,10 @@ open class GameViewModel(private val game: Game) : ViewModel(), Game.GameEvents 
     }
 
     fun onPlacementModeChange(placementMode: Boolean){
-        gameState.value = GameState.PositionShips(placementMode)
+        gameState.value =
+            GameState.PositionShips(
+                placementMode
+            )
     }
 
     override fun onGameInitialized() {
@@ -160,19 +165,25 @@ open class GameViewModel(private val game: Game) : ViewModel(), Game.GameEvents 
     }
 
     override fun onReadyToPositionShips() {
-        gameState.value = GameState.PositionShips(false)
+        gameState.value =
+            GameState.PositionShips(
+                false
+            )
     }
 
     override fun onShipsPositioned() {
-        gameState.value = GameState.WaitingForOpponent
+        gameState.value =
+            GameState.WaitingForOpponent
         game.readyToPlay()
     }
 
     override fun onGameStarted(takeTurn: Boolean) {
         if(takeTurn){
-            gameState.value = GameState.PlayerTurn
+            gameState.value =
+                GameState.PlayerTurn
         } else {
-            gameState.value = GameState.OpponentTurn
+            gameState.value =
+                GameState.OpponentTurn
         }
     }
 
@@ -186,37 +197,46 @@ open class GameViewModel(private val game: Game) : ViewModel(), Game.GameEvents 
 
     override fun onBeingFired(damageReport: DamageReport) {
         if(!gameOver){
-            gameState.value = GameState.PlayerTakingFire
+            gameState.value =
+                GameState.PlayerTakingFire
             game.sendDamageReport(damageReport)
             Handler().postDelayed({
-                gameState.value = GameState.PlayerTurn
+                gameState.value =
+                    GameState.PlayerTurn
             }, GameConfig.RESPONSE_ANIMATION_DELAY)
         }
     }
 
     override fun onReceivingDamageReport(damageReport: DamageReport) {
         if(!gameOver){
-            gameState.value = GameState.OpponentTakingFire
+            gameState.value =
+                GameState.OpponentTakingFire
             Handler().postDelayed({
-                gameState.value = GameState.OpponentTurn
+                gameState.value =
+                    GameState.OpponentTurn
             }, GameConfig.RESPONSE_ANIMATION_DELAY)
         }
     }
 
 
     override fun onGameWon() {
-        gameState.value = GameState.GameWon
+        gameState.value =
+            GameState.GameWon
         gameOver = true
     }
 
     override fun onGameLost() {
-        gameState.value = GameState.GameLost
+        gameState.value =
+            GameState.GameLost
         gameOver = true
     }
 
     override fun onGameInterrupted(message: String) {
         if(gameState.value != GameState.GameWon ||  gameState.value != GameState.GameLost){
-            gameState.value = GameState.GameInterrupted(message)
+            gameState.value =
+                GameState.GameInterrupted(
+                    message
+                )
         }
     }
 
@@ -230,6 +250,9 @@ class GameViewModelFactory(private val repository: Game) : ViewModelProvider.New
 
 class OnlineGameViewModelFactory(private val repository: OnlineGame, private val createRoom: Boolean) : ViewModelProvider.NewInstanceFactory(){
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return OnlineGameViewModel(repository, createRoom) as T
+        return OnlineGameViewModel(
+            repository,
+            createRoom
+        ) as T
     }
 }

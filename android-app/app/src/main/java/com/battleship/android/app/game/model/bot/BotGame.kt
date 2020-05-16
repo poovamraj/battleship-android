@@ -1,8 +1,8 @@
-package com.battleship.android.app.model.bot
+package com.battleship.android.app.game.model.bot
 
-import com.battleship.android.app.model.DamageReport
-import com.battleship.android.app.model.Game
-import com.battleship.android.app.model.setDamageOnGrid
+import com.battleship.android.app.game.model.DamageReport
+import com.battleship.android.app.game.model.Game
+import com.battleship.android.app.game.model.setDamageOnGrid
 import com.battleship.core.CellState
 import com.battleship.core.Grid
 import com.battleship.core.Position

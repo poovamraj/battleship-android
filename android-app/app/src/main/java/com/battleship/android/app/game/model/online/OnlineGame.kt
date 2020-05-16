@@ -1,9 +1,9 @@
-package com.battleship.android.app.model.online
+package com.battleship.android.app.game.model.online
 
 import com.battleship.android.app.common.runOnMainThread
-import com.battleship.android.app.model.DamageReport
-import com.battleship.android.app.model.Game
-import com.battleship.android.app.model.setDamageOnGrid
+import com.battleship.android.app.game.model.DamageReport
+import com.battleship.android.app.game.model.Game
+import com.battleship.android.app.game.model.setDamageOnGrid
 import com.battleship.android.websocketclient.GameSocket
 import com.battleship.core.Grid
 import com.battleship.core.Position
@@ -109,7 +109,9 @@ class OnlineGame(
 
     override fun onMessage(message: String) {
         val type =
-            getTypeFromMessage(message)
+            getTypeFromMessage(
+                message
+            )
         runOnMainThread {
             when(type) {
 
@@ -150,7 +152,12 @@ class OnlineGame(
                         parseHitMessage(
                             message
                         )
-                    events?.onBeingFired(setDamageOnGrid(getOceanGrid(), hitPositions))
+                    events?.onBeingFired(
+                        setDamageOnGrid(
+                            getOceanGrid(),
+                            hitPositions
+                        )
+                    )
                 }
 
                 HIT_RESPONSE -> {
@@ -158,7 +165,10 @@ class OnlineGame(
                         parseHitResponse(
                             message
                         )
-                    setDamageOnGrid(targetGrid, hitResponse)
+                    setDamageOnGrid(
+                        targetGrid,
+                        hitResponse
+                    )
                     events?.onReceivingDamageReport(hitResponse)
                 }
 
