@@ -1,12 +1,12 @@
 package com.battleship.android.app.model
 
-import com.battleship.core.BaseGrid
+import com.battleship.core.Grid
 import com.battleship.core.Position
 import java.util.*
 import kotlin.collections.ArrayList
 
 
-class BotGame(private val oceanGrid: BaseGrid, private val targetGrid: BaseGrid):
+class BotGame(private val oceanGrid: Grid, private val targetGrid: Grid):
     Game {
 
     private var gameEvents: Game.GameEvents? = null
@@ -16,11 +16,11 @@ class BotGame(private val oceanGrid: BaseGrid, private val targetGrid: BaseGrid)
         gameEvents?.onReadyToPositionShips()
     }
 
-    override fun getOceanGrid(): BaseGrid {
+    override fun getOceanGrid(): Grid {
         return oceanGrid
     }
 
-    override fun getTargetGrid(): BaseGrid {
+    override fun getTargetGrid(): Grid {
         return targetGrid
     }
 

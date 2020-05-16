@@ -4,7 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.recyclerview.widget.GridLayoutManager
 import com.battleship.android.app.R
-import com.battleship.core.BaseGrid
+import com.battleship.core.GridBuilder
 import com.battleship.core.Ship
 import kotlinx.android.synthetic.main.activity_game.*
 
@@ -16,7 +16,7 @@ class GameActivity : AppCompatActivity() {
 
         val gridSize = 10
 
-        val oceanGrid = BaseGrid(gridSize, arrayOf(
+        val oceanGrid = GridBuilder.createGrid(gridSize, arrayOf(
             Ship.makeAirCarrier(),
             Ship.makeDestroyer(),
             Ship.makeDestroyer(),

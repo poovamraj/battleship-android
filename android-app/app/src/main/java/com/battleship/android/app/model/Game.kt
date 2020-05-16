@@ -1,15 +1,15 @@
 package com.battleship.android.app.model
 
-import com.battleship.core.BaseGrid
+import com.battleship.core.Grid
 import com.battleship.core.Position
 
 interface Game {
 
     fun initializeGame()
 
-    fun getOceanGrid(): BaseGrid
+    fun getOceanGrid(): Grid
 
-    fun getTargetGrid(): BaseGrid
+    fun getTargetGrid(): Grid
 
     fun readyToPlay()
 

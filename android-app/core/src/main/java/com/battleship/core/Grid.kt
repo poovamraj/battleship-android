@@ -213,3 +213,11 @@ sealed class Result<T, U> {
     data class Success<T, U>(val value: T): Result<T, U>()
     data class Err<T, U>(val value: U): Result<T, U>()
 }
+
+class GridBuilder {
+    companion object {
+        fun createGrid(gridSize: Int, ships: Array<Ship>): Grid{
+            return BaseGrid(gridSize, ships)
+        }
+    }
+}
