@@ -3,7 +3,12 @@ apply plugin: 'kotlin'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    /**
+     * WebSocket client library (same as one used in the server)
+     */
+    implementation "org.java-websocket:Java-WebSocket:1.5.1"
 }
 
 sourceCompatibility = "7"
