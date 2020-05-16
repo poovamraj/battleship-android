@@ -1,4 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.battleship.android.app">
 
     <application
@@ -7,5 +9,15 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme" />
+        android:theme="@style/AppTheme"
+        tools:ignore="LockedOrientationActivity"> <!--This line is added to ignore fixed
+        warning Orientation by AS 3.6. Our app currently only supports Portrait  -->
+
+        <activity android:name=".GameActivity"
+            android:screenOrientation="portrait"> <!--  TODO Current implementation requires to define
+             portrait mode in each activity, need to make it common -->
+        </activity>
+
+    </application>
+
 </manifest>
