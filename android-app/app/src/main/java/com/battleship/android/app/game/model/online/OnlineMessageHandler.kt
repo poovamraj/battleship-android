@@ -15,7 +15,7 @@ data class Protocol<E>(val type: String, val message: E)
 
 data class Error(val code: Int, val message: String)
 
-fun getTypeFromMessage(message: String): String?{
+fun getTypeFromMessage(message: String): String? {
     val element = JSONObject(message)
     return element.optString("type", "")
 }
@@ -57,13 +57,8 @@ const val JOIN_ROOM = "join_room"
 
 const val JOIN_ROOM_FAILED = "join_room_failed"
 
-fun constructJoinRoomProtocol(roomId: Long): String{
-    return gson.toJson(
-        Protocol(
-            JOIN_ROOM,
-            RoomMessage(roomId)
-        )
-    )
+fun constructJoinRoomProtocol(roomId: Long): String {
+    return gson.toJson(Protocol(JOIN_ROOM, RoomMessage(roomId)))
 }
 
 fun parseJoinRoomFailed(message: String): Error {
@@ -87,7 +82,7 @@ fun parsePositionShips(message: String): GameData {
     return input.message
 }
 
-fun constructShipsPositionedProtocol(): String{
+fun constructShipsPositionedProtocol(): String {
     return gson.toJson(
         Protocol(
             SHIPS_POSITIONED,
@@ -116,7 +111,7 @@ const val HIT = "hit"
 
 const val HIT_RESPONSE = "hit_response"
 
-fun constructFireProtocol(positions: ArrayList<Position>): String{
+fun constructFireProtocol(positions: ArrayList<Position>): String {
     return gson.toJson(
         Protocol(
             HIT,
@@ -125,13 +120,13 @@ fun constructFireProtocol(positions: ArrayList<Position>): String{
     )
 }
 
-fun parseHitMessage(message: String): ArrayList<Position>{
+fun parseHitMessage(message: String): ArrayList<Position> {
     val collectionType = object : TypeToken<Protocol<ArrayList<Position>>>() {}.type
     val input = gson.fromJson<Protocol<ArrayList<Position>>>(message, collectionType)
     return input.message
 }
 
-fun constructDamageReportProtocol(response: DamageReport): String{
+fun constructDamageReportProtocol(response: DamageReport): String {
     return gson.toJson(
         Protocol(
             HIT_RESPONSE,

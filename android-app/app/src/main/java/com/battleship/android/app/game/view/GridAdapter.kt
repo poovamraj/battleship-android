@@ -12,7 +12,12 @@ import com.battleship.core.DirectionFacing
 import com.battleship.core.Ship
 import kotlinx.android.synthetic.main.cell.view.*
 
-class GridAdapter(private val gridSize: Int, private val drawShips: Boolean, private val dataSet: Array<Array<Cell>>, private val ships: Array<Ship>) :
+class GridAdapter(
+    private val gridSize: Int,
+    private val drawShips: Boolean,
+    private val dataSet: Array<Array<Cell>>,
+    private val ships: Array<Ship>
+) :
     RecyclerView.Adapter<GridAdapter.CellView>() {
 
     class CellView(val cellView: View) : RecyclerView.ViewHolder(cellView)
@@ -23,7 +28,7 @@ class GridAdapter(private val gridSize: Int, private val drawShips: Boolean, pri
 
     private var longClickMode = false
         set(value) {
-            if(field != value){
+            if (field != value) {
                 clickListener?.onLongClickModeChange(value)
             }
             field = value
@@ -45,11 +50,11 @@ class GridAdapter(private val gridSize: Int, private val drawShips: Boolean, pri
 
         view.text = "" //default state
 
-        if(drawShips){
+        if (drawShips) {
             ships.forEach {
                 it.let {
                     val shipPart = it.partPosition(cell)
-                    if(shipPart != null){
+                    if (shipPart != null) {
                         drawShip(holder.cellView.innerCellView, it, shipPart)
                         shipDrawn = true
                     }
@@ -57,7 +62,7 @@ class GridAdapter(private val gridSize: Int, private val drawShips: Boolean, pri
             }
         }
 
-        when(cell.getCellState()) {
+        when (cell.getCellState()) {
             is CellState.Sunk -> {
                 view.setBackgroundResource(R.color.sunkColor)
                 view.text = ""
@@ -71,7 +76,7 @@ class GridAdapter(private val gridSize: Int, private val drawShips: Boolean, pri
                 view.text = "X"
             }
             CellState.None -> {
-                if(!shipDrawn){
+                if (!shipDrawn) {
                     view.text = ""
                     view.setBackgroundResource(R.color.backgroundColor)
                 }
@@ -79,7 +84,8 @@ class GridAdapter(private val gridSize: Int, private val drawShips: Boolean, pri
         }
 
         holder.cellView.setOnClickListener {
-            longClickMode = clickListener?.onClick(longClickMode, x, y, cell.getCellState()) ?: false
+            longClickMode =
+                clickListener?.onClick(longClickMode, x, y, cell.getCellState()) ?: false
         }
 
         holder.cellView.setOnLongClickListener {
@@ -89,23 +95,23 @@ class GridAdapter(private val gridSize: Int, private val drawShips: Boolean, pri
     }
 
     private fun getCoordinates(position: Int): Pair<Int, Int> {
-        return Pair(position/gridSize, position % gridSize)
+        return Pair(position / gridSize, position % gridSize)
     }
 
-    private fun drawShip(view: TextView, ship: Ship, position: Int){
+    private fun drawShip(view: TextView, ship: Ship, position: Int) {
         val direction = ship.directionFacing
-        if(ship == chosenShip){
+        if (ship == chosenShip) {
             view.setBackgroundResource(R.color.chosenShipColor)
         } else {
             view.setBackgroundResource(R.color.shipPlacedColor)
         }
-        var text = when(direction){
+        var text = when (direction) {
             DirectionFacing.North -> "△"
             DirectionFacing.West -> "◁"
             DirectionFacing.South -> "▽"
             DirectionFacing.East -> "▷"
         }
-        if(ship.size == 1){
+        if (ship.size == 1) {
             text = "◎"
         }
         view.text = text
