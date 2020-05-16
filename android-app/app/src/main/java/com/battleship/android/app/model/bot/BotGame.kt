@@ -1,5 +1,8 @@
-package com.battleship.android.app.model
+package com.battleship.android.app.model.bot
 
+import com.battleship.android.app.model.DamageReport
+import com.battleship.android.app.model.Game
+import com.battleship.android.app.model.setDamageOnGrid
 import com.battleship.core.CellState
 import com.battleship.core.Grid
 import com.battleship.core.Position
@@ -7,7 +10,8 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class BotGame(private val oceanGrid: Grid, private val targetGrid: Grid): Game{
+class BotGame(private val oceanGrid: Grid, private val targetGrid: Grid):
+    Game {
 
     private var gameEvents: Game.GameEvents? = null
 
@@ -41,7 +45,12 @@ class BotGame(private val oceanGrid: Grid, private val targetGrid: Grid): Game{
     }
 
     override fun fire(positions: ArrayList<Position>) {
-        gameEvents?.onReceivingDamageReport(setDamageOnGrid(targetGrid, positions))
+        gameEvents?.onReceivingDamageReport(
+            setDamageOnGrid(
+                targetGrid,
+                positions
+            )
+        )
         android.os.Handler().postDelayed({botFire()}, 2000)
     }
 
@@ -62,7 +71,12 @@ class BotGame(private val oceanGrid: Grid, private val targetGrid: Grid): Game{
             y = oceanGrid.getCells().indices.random()
         }
         val positions = arrayListOf(Position(x, y))
-        gameEvents?.onBeingFired(setDamageOnGrid(oceanGrid, positions))
+        gameEvents?.onBeingFired(
+            setDamageOnGrid(
+                oceanGrid,
+                positions
+            )
+        )
     }
 
     override fun setGameEvents(events: Game.GameEvents) {

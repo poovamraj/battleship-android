@@ -8,7 +8,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.battleship.android.app.R
-import com.battleship.android.app.model.BotGame
+import com.battleship.android.app.model.bot.BotGame
 import com.battleship.android.app.model.GameConfig
 import com.battleship.android.app.viewmodel.GameViewModel
 import com.battleship.android.app.viewmodel.GameViewModelFactory
@@ -20,7 +20,10 @@ class GameActivity : AppCompatActivity() {
 
     companion object {
         fun constructBotViewModel(activity: GameActivity, oceanGrid: Grid, targetGrid: Grid): GameViewModel {
-            val game = BotGame(oceanGrid, targetGrid)
+            val game = BotGame(
+                oceanGrid,
+                targetGrid
+            )
             return ViewModelProvider(
                 activity,
                 GameViewModelFactory(game)
