@@ -16,6 +16,10 @@
         <activity android:name=".GameActivity"
             android:screenOrientation="portrait"> <!--  TODO Current implementation requires to define
              portrait mode in each activity, need to make it common -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
     </application>

@@ -1,6 +1,6 @@
 package com.battleship.core
 
-internal class BaseGrid (private val gridSize: Int, private val ships: Array<Ship>) {
+class BaseGrid (private val gridSize: Int, private val ships: Array<Ship>) {
 
     private val cells: Array<Array<Cell>> = Array(gridSize) { Array(gridSize) { Cell() } }
 
