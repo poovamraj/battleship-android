@@ -3,7 +3,7 @@ package com.battleship.android.app.model
 import com.battleship.core.Grid
 import com.battleship.core.Position
 
-interface Game {
+interface Game : Grid.GridEventListener {
 
     fun initializeGame()
 
@@ -15,7 +15,7 @@ interface Game {
 
     fun fire(positions: ArrayList<Position>)
 
-    fun sendDamageReport()
+    fun sendDamageReport(damageReport: DamageReport)
 
     fun sendGameLost()
 
@@ -30,9 +30,9 @@ interface Game {
 
         fun onGameStarted(takeTurn: Boolean)
 
-        fun onBeingFired()
+        fun onBeingFired(damageReport: DamageReport)
 
-        fun onReceivingDamageReport()
+        fun onReceivingDamageReport(damageReport: DamageReport)
 
         fun onGameWon()
 
