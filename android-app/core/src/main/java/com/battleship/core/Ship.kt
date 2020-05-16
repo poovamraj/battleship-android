@@ -1,12 +1,12 @@
 package com.battleship.core
 
-class Ship (val size: Int) {
+class Ship(val size: Int) {
 
     var directionFacing = DirectionFacing.East
         internal set
 
-    internal fun isShipMovable(): Boolean{
-        return parts.none { it?.getCellState() == CellState.Hit && it.getCellState() is CellState.Sunk}
+    internal fun isShipMovable(): Boolean {
+        return parts.none { it?.getCellState() == CellState.Hit && it.getCellState() is CellState.Sunk }
     }
 
     /*
@@ -16,15 +16,15 @@ class Ship (val size: Int) {
     */
     private var parts = arrayOfNulls<Cell>(size)
 
-    internal fun setShipParts(cells: Array<Cell?>){
+    internal fun setShipParts(cells: Array<Cell?>) {
         this.parts = cells
     }
 
-    internal fun getShipParts(): Array<Cell?>{
+    internal fun getShipParts(): Array<Cell?> {
         return parts
     }
 
-    internal fun removeAllParts(){
+    internal fun removeAllParts() {
         parts = arrayOfNulls(size)
     }
 
@@ -32,17 +32,17 @@ class Ship (val size: Int) {
         return parts.all { it?.getCellState() == CellState.Hit }
     }
 
-    internal fun containsPart(cell: Cell): Boolean{
+    internal fun containsPart(cell: Cell): Boolean {
         return parts.contains(cell)
     }
 
-    fun partPosition(cell: Cell): Int?{
-        if(!containsPart(cell)) return null
+    fun partPosition(cell: Cell): Int? {
+        if (!containsPart(cell)) return null
         return parts.indexOf(cell)
     }
 
-    internal fun takeFire(cell: Cell): CellState{
-        if(parts.contains(cell)){
+    internal fun takeFire(cell: Cell): CellState {
+        if (parts.contains(cell)) {
             cell.hit()
             return CellState.Hit
         }
@@ -50,19 +50,19 @@ class Ship (val size: Int) {
     }
 
     companion object {
-        fun makeAirCarrier(): Ship{
+        fun makeAirCarrier(): Ship {
             return Ship(4)
         }
 
-        fun makeDestroyer(): Ship{
+        fun makeDestroyer(): Ship {
             return Ship(3)
         }
 
-        fun makeCruiser(): Ship{
+        fun makeCruiser(): Ship {
             return Ship(2)
         }
 
-        fun makeMine(): Ship{
+        fun makeMine(): Ship {
             return Ship(1)
         }
 
