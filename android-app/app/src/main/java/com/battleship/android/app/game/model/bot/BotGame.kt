@@ -2,6 +2,7 @@ package com.battleship.android.app.game.model.bot
 
 import com.battleship.android.app.game.model.DamageReport
 import com.battleship.android.app.game.model.Game
+import com.battleship.android.app.game.model.GameConfig
 import com.battleship.android.app.game.model.setDamageOnGrid
 import com.battleship.core.CellState
 import com.battleship.core.Grid
@@ -10,8 +11,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class BotGame(private val oceanGrid: Grid, private val targetGrid: Grid):
-    Game {
+class BotGame(private val oceanGrid: Grid, private val targetGrid: Grid) : Game {
 
     private var gameEvents: Game.GameEvents? = null
 
@@ -19,7 +19,7 @@ class BotGame(private val oceanGrid: Grid, private val targetGrid: Grid):
         oceanGrid.placeShipsRandomly()
         targetGrid.placeShipsRandomly()
         oceanGrid.setGridEventListener(this)
-        targetGrid.setGridEventListener(object : Grid.GridEventListener{
+        targetGrid.setGridEventListener(object : Grid.GridEventListener {
             override fun onGameLost() {
                 gameEvents?.onGameWon()
             }
@@ -37,21 +37,16 @@ class BotGame(private val oceanGrid: Grid, private val targetGrid: Grid):
     }
 
     override fun readyToPlay() {
-        val playerTakesTurn =  Random().nextBoolean()
+        val playerTakesTurn = Random().nextBoolean()
         gameEvents?.onGameStarted(playerTakesTurn)
-        if(!playerTakesTurn){
+        if (!playerTakesTurn) {
             botFire()
         }
     }
 
     override fun fire(positions: ArrayList<Position>) {
-        gameEvents?.onReceivingDamageReport(
-            setDamageOnGrid(
-                targetGrid,
-                positions
-            )
-        )
-        android.os.Handler().postDelayed({botFire()}, 2000)
+        gameEvents?.onReceivingDamageReport(setDamageOnGrid(targetGrid, positions))
+        android.os.Handler().postDelayed({ botFire() }, GameConfig.RESPONSE_ANIMATION_DELAY)
     }
 
     override fun sendDamageReport(damageReport: DamageReport) {
@@ -63,20 +58,15 @@ class BotGame(private val oceanGrid: Grid, private val targetGrid: Grid):
     }
 
     /**This is a stupid bot implemented to test, need to provide it "Intelligence" */
-    private fun botFire(){
+    private fun botFire() {
         var x = 0
         var y = 0
-        while (oceanGrid.getCell(x,y)?.getCellState() != CellState.None){
+        while (oceanGrid.getCell(x, y)?.getCellState() != CellState.None) {
             x = oceanGrid.getCells().indices.random()
             y = oceanGrid.getCells().indices.random()
         }
         val positions = arrayListOf(Position(x, y))
-        gameEvents?.onBeingFired(
-            setDamageOnGrid(
-                oceanGrid,
-                positions
-            )
-        )
+        gameEvents?.onBeingFired(setDamageOnGrid(oceanGrid, positions))
     }
 
     override fun setGameEvents(events: Game.GameEvents) {
