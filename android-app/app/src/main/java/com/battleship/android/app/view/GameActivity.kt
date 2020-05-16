@@ -1,8 +1,9 @@
-package com.battleship.android.app
+package com.battleship.android.app.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.recyclerview.widget.GridLayoutManager
+import com.battleship.android.app.R
 import com.battleship.core.BaseGrid
 import com.battleship.core.Ship
 import kotlinx.android.synthetic.main.activity_game.*

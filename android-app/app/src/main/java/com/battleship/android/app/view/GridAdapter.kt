@@ -1,10 +1,11 @@
-package com.battleship.android.app
+package com.battleship.android.app.view
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.battleship.android.app.R
 import com.battleship.core.Cell
 import com.battleship.core.DirectionFacing
 import com.battleship.core.Ship

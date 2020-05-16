@@ -13,7 +13,7 @@
         tools:ignore="LockedOrientationActivity"> <!--This line is added to ignore fixed
         warning Orientation by AS 3.6. Our app currently only supports Portrait  -->
 
-        <activity android:name=".GameActivity"
+        <activity android:name=".view.GameActivity"
             android:screenOrientation="portrait"> <!--  TODO Current implementation requires to define
              portrait mode in each activity, need to make it common -->
             <intent-filter>
