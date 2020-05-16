@@ -1,6 +1,7 @@
 package com.battleship.core
 
 class Cell {
+
     private var cellState: CellState = CellState.None
 
     internal fun hit(){ //using methods instead of providing direct access, provides abstraction
@@ -11,8 +12,8 @@ class Cell {
         setState(CellState.Miss)
     }
 
-    internal fun sunk(){
-        setState(CellState.Sunk)
+    internal fun sunk(positions: ArrayList<Position>){
+        setState(CellState.Sunk(positions))
     }
 
     internal fun none(){
@@ -33,6 +34,6 @@ data class Position(val x: Int, val y: Int)
 sealed class CellState{
     object Hit : CellState()
     object Miss: CellState()
-    object Sunk: CellState()
+    data class Sunk(val positions: ArrayList<Position>): CellState()
     object None: CellState()
 }
