@@ -233,6 +233,7 @@ class GameActivity : AppCompatActivity() {
         titleTextView.text = title
         actionButton.visibility = View.VISIBLE
         actionButton.text = getString(R.string.home)
+        gameHolder.visibility = View.GONE
         actionButton.setOnClickListener {
             finish()
         }
