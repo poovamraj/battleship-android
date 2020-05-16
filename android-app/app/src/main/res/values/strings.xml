@@ -1,3 +1,27 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">Battleship</string>
+
+    <!-- Used in game activity -->
+    <string name="position_ships">Position Ships - Tap to rotate &amp; Long press to move</string>
+    <string name="place_chose_ship">Place the selected ship by tapping on a cell</string>
+    <string name="cannot_place_out_of_boundary">Cannot place - Ship goes out of boundary</string>
+    <string name="cannot_place_in_use">Cannot place - Trying to place over a cell in use</string>
+    <string name="placed_successfully">Placed successfully</string>
+    <string name="ship_cannot_move">Ship cannot be moved</string>
+    <string name="start_game">Start Game!</string>
+    <string name="place_random">Place Ships Randomly</string>
+    <string name="waiting_for_opponent">Waiting For Opponent</string>
+    <string name="firing_guide">Tap on the cell you want to fire on</string>
+    <string name="opponent_turn">Opponent\'s Turn</string>
+    <string name="your_shot">Your shot</string>
+    <string name="opponent_shot">Opponent\'s shot</string>
+    <string name="cannot_fire">Cannot fire there</string>
+    <string name="win_message">You Win!!!</string>
+    <string name="lost_message">You Lost</string>
+    <string name="exit_message">Do you really want to exit</string>
+
+    <string name="home">Home</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="join">Join</string>
 </resources>

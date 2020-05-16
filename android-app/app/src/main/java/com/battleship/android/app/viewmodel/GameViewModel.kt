@@ -1,43 +1,175 @@
 package com.battleship.android.app.viewmodel
 
+import android.os.Handler
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.battleship.android.app.model.DamageReport
 import com.battleship.android.app.model.Game
+import com.battleship.android.app.model.GameConfig
+import com.battleship.core.*
 
 class GameViewModel(private val game: Game) : ViewModel(), Game.GameEvents {
+
+    sealed class GameState {
+        data class PositionShips(val placementMode: Boolean): GameState()
+        object WaitingForOpponent: GameState()
+        object PlayerTurn : GameState()
+        object OpponentTurn :  GameState()
+        object PlayerTakingFire: GameState()
+        object OpponentTakingFire: GameState()
+        object GameLost: GameState()
+        object GameWon: GameState()
+        data class GameInterrupted(val reason: String): GameState()
+    }
+
+    private var gameOver = false
+
+    var onGridDataChanged: ((Grid)-> Unit)? = null
+
+    var onShipCannotBePlaced: ((ShipPlacingResult)-> Unit)? = null
+
+    protected val gameState: MutableLiveData<GameState> by lazy { MutableLiveData() }
+
+    private val shipChosenToMove: MutableLiveData<Ship?> by lazy { MutableLiveData() }
+
+    fun initialize(){
+        game.setGameEvents(this)
+        game.initializeGame()
+    }
+
+    fun getOceanGrid(): Grid{
+        return game.getOceanGrid()
+    }
+
+    fun getTargetGrid(): Grid{
+        return game.getTargetGrid()
+    }
+
+    fun getGameState(): LiveData<GameState> {
+        return gameState
+    }
+
+    fun getChosenShip(): LiveData<Ship?>{
+        return shipChosenToMove
+    }
+
+    fun placeShipsRandomly(){
+        if(gameState.value is GameState.PositionShips) {
+            getOceanGrid().placeShipsRandomly()
+        }
+    }
+
+    fun onGridLongPressed(grid: Grid, placementMode: Boolean, x: Int, y: Int): Boolean {
+        if(gameState.value is GameState.PositionShips){
+            return if(!placementMode){
+                shipChosenToMove.value = grid.getShipAtPosition(x, y)
+                shipChosenToMove.value != null
+            } else {
+                false
+            }
+        }
+        return false
+    }
+
+    fun onGridTapped(grid: Grid, placementMode: Boolean, x: Int, y: Int): Boolean {
+        if(gameState.value is GameState.PositionShips){
+            if(placementMode){
+                val tempShip = shipChosenToMove.value //not use let?. since it would cause confusion while returning
+                if(tempShip != null){
+                    val result = grid.placeShip(tempShip, x, y)
+                    if(result != ShipPlacingResult.Placed){
+                        onShipCannotBePlaced?.invoke(result)
+                    }
+                    shipChosenToMove.value = null
+                    onGridDataChanged?.invoke(grid)
+                    return false
+                }
+                return true
+            } else {
+                val ship = grid.getShipAtPosition(x, y)
+                ship?.let { grid.rotateShip(ship) }
+                onGridDataChanged?.invoke(grid)
+                return false
+            }
+        }
+        return false
+    }
+
+    fun onPlacementModeChange(placementMode: Boolean){
+        gameState.value = GameState.PositionShips(placementMode)
+    }
+
     override fun onGameInitialized() {
-        TODO("Not yet implemented")
+        //no logic needed here only [OnlineGameViewModel] uses this method to create/join room
     }
 
     override fun onReadyToPositionShips() {
-        TODO("Not yet implemented")
+        gameState.value = GameState.PositionShips(false)
     }
 
     override fun onShipsPositioned() {
-        TODO("Not yet implemented")
+        gameState.value = GameState.WaitingForOpponent
+        game.readyToPlay()
     }
 
     override fun onGameStarted(takeTurn: Boolean) {
-        TODO("Not yet implemented")
+        if(takeTurn){
+            gameState.value = GameState.PlayerTurn
+        } else {
+            gameState.value = GameState.OpponentTurn
+        }
     }
 
-    override fun onBeingFired() {
-        TODO("Not yet implemented")
+    fun fire(positions: ArrayList<Position>, cellState: CellState): Boolean {
+        if(gameState.value == GameState.PlayerTurn && cellState == CellState.None){
+            game.fire(positions)
+            return true
+        }
+        return false
     }
 
-    override fun onReceivingDamageReport() {
-        TODO("Not yet implemented")
+    override fun onBeingFired(damageReport: DamageReport) {
+        if(!gameOver){
+            gameState.value = GameState.PlayerTakingFire
+            game.sendDamageReport(damageReport)
+            Handler().postDelayed({
+                gameState.value = GameState.PlayerTurn
+            }, GameConfig.RESPONSE_ANIMATION_DELAY)
+        }
     }
+
+    override fun onReceivingDamageReport(damageReport: DamageReport) {
+        if(!gameOver){
+            gameState.value = GameState.OpponentTakingFire
+            Handler().postDelayed({
+                gameState.value = GameState.OpponentTurn
+            }, GameConfig.RESPONSE_ANIMATION_DELAY)
+        }
+    }
+
 
     override fun onGameWon() {
-        TODO("Not yet implemented")
+        gameState.value = GameState.GameWon
+        gameOver = true
     }
 
     override fun onGameLost() {
-        TODO("Not yet implemented")
+        gameState.value = GameState.GameLost
+        gameOver = true
     }
 
     override fun onGameInterrupted(message: String) {
-        TODO("Not yet implemented")
+        if(gameState.value != GameState.GameWon ||  gameState.value != GameState.GameLost){
+            gameState.value = GameState.GameInterrupted(message)
+        }
     }
+}
 
+
+class GameViewModelFactory(private val repository: Game) : ViewModelProvider.NewInstanceFactory(){
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        return GameViewModel(repository) as T
+    }
 }
