@@ -1,5 +1,6 @@
-package com.battleship.server.game
+package com.battleship.server.game.controller
 
+import com.battleship.server.game.common.GameIdGenerator
 import com.battleship.server.websocket.GameConnection
 
 class Lobby(val rooms: ArrayList<Room>, private val idGenerator: GameIdGenerator){
