@@ -1,10 +1,11 @@
 package com.battleship.server.game.network
 
+import com.battleship.server.game.controller.GameController
 import com.battleship.server.websocket.GameConnection
 import com.battleship.server.websocket.GameServer
 
 
-class BattleShipServer(private val server: GameServer): GameServer.ServerEvents{
+class BattleShipServer(private val server: GameServer, private val controller: GameController): GameServer.ServerEvents{
 
     fun start(){
         server.setEvents(this)
@@ -18,11 +19,11 @@ class BattleShipServer(private val server: GameServer): GameServer.ServerEvents{
     override fun onNewConnection(conn: GameConnection) {
         conn.setEvents(object : GameConnection.Events {
             override fun onClose() {
-
+                controller.onDisconnect(conn)
             }
 
             override fun onMessage(message: String?) {
-                message?.let {  }
+                message?.let { process(message, conn, controller) }
             }
 
             override fun onError(ex: Exception?) {

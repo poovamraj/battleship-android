@@ -25,6 +25,34 @@ class Room(
     val noOfSteps: Int,
     val players: ArrayList<Player>,
     val id: Long
-)
+){
+    fun addPlayer(player: Player){
+        if(!isFull()){
+            players.add(player)
+        }
+    }
 
-class Player(val gameConnection: GameConnection)
+    fun broadcastToAllPlayers(message: String){
+        players.forEach { it.sendMessage(message) }
+    }
+
+    fun isFull(): Boolean{
+        return players.size >= 2
+    }
+}
+
+class Player(val gameConnection: GameConnection){
+    private var readyToStartGame = false
+
+    fun readyToStartGame(){
+        readyToStartGame = true
+    }
+
+    fun isReadyToStartGame(): Boolean{
+        return readyToStartGame
+    }
+
+    fun sendMessage(string: String){
+        gameConnection.send(string)
+    }
+}
