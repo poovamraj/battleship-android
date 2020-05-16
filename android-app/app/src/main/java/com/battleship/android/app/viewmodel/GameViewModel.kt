@@ -8,11 +8,65 @@ import androidx.lifecycle.ViewModelProvider
 import com.battleship.android.app.model.DamageReport
 import com.battleship.android.app.model.Game
 import com.battleship.android.app.model.GameConfig
+import com.battleship.android.app.model.online.OnlineGame
 import com.battleship.core.*
 
-class GameViewModel(private val game: Game) : ViewModel(), Game.GameEvents {
+class OnlineGameViewModel(private val onlinePlayer: OnlineGame, private val createRoom: Boolean) : GameViewModel(onlinePlayer){
+
+    private var socketInitialized = false
+
+    private val roomId: MutableLiveData<Long> by lazy { MutableLiveData() }
+
+    var onJoinRoomFailed: ((String)-> Unit)? = null
+
+    init {
+        onlinePlayer.connect()
+    }
+
+    fun getRoomIdObservable(): LiveData<Long>{
+        return roomId
+    }
+
+    override fun onGameInitialized() {
+        super.onGameInitialized()
+        socketInitialized = true
+        if(createRoom){
+            gameState.value = GameState.CreateRoom
+            createRoom()
+        } else {
+            gameState.value = GameState.JoinRoom
+        }
+    }
+
+    private fun createRoom(){
+        if(socketInitialized){
+            //grid size and no of steps given below is not useful now, but will be required in future
+            //when host can create game with different grid size and number of steps
+            onlinePlayer.createRoom(GameConfig.GRID_SIZE, GameConfig.NO_OF_STEPS){
+                roomId.value = it
+            }
+        }
+    }
+
+    fun joinRoom(roomId: Long){
+        if(socketInitialized) {
+            onlinePlayer.joinRoom(roomId) {
+                onJoinRoomFailed?.invoke(it.message)
+            }
+        }
+    }
+
+
+    override fun onCleared(){
+        onlinePlayer.disconnect()
+    }
+}
+
+open class GameViewModel(private val game: Game) : ViewModel(), Game.GameEvents {
 
     sealed class GameState {
+        object CreateRoom: GameState()
+        object JoinRoom: GameState()
         data class PositionShips(val placementMode: Boolean): GameState()
         object WaitingForOpponent: GameState()
         object PlayerTurn : GameState()
@@ -47,7 +101,7 @@ class GameViewModel(private val game: Game) : ViewModel(), Game.GameEvents {
         return game.getTargetGrid()
     }
 
-    fun getGameState(): LiveData<GameState> {
+    fun getGameState(): LiveData<GameState>{
         return gameState
     }
 
@@ -165,11 +219,17 @@ class GameViewModel(private val game: Game) : ViewModel(), Game.GameEvents {
             gameState.value = GameState.GameInterrupted(message)
         }
     }
-}
 
+}
 
 class GameViewModelFactory(private val repository: Game) : ViewModelProvider.NewInstanceFactory(){
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return GameViewModel(repository) as T
+    }
+}
+
+class OnlineGameViewModelFactory(private val repository: OnlineGame, private val createRoom: Boolean) : ViewModelProvider.NewInstanceFactory(){
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        return OnlineGameViewModel(repository, createRoom) as T
     }
 }
