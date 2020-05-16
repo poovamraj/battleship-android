@@ -2,7 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/background">
 
     <TextView
         android:layout_width="wrap_content"
@@ -10,6 +11,7 @@
         android:id="@+id/titleTextView"
         android:textSize="20sp"
         android:textStyle="bold"
+        android:textColor="@color/textColor"
         android:gravity="center"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/gameHolder"
@@ -21,6 +23,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/roomIdInput"
         android:inputType="number"
+        android:background="@color/textViewBackground"
         android:padding="15dp"
         android:hint="@string/room_id_hint"
         android:visibility="gone"
