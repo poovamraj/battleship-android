@@ -42,6 +42,12 @@ dependencies {
     implementation "androidx.viewpager2:viewpager2:1.0.0" //since ViewPager is deprecated
 
     /**
+     * Network related libs Websocket and Gson for parsing
+     */
+    implementation project(path: ':websocketclient')
+    implementation 'com.google.code.gson:gson:2.8.6'
+
+    /**
      * Core module library dependency
      */
     implementation project(path: ':core')
