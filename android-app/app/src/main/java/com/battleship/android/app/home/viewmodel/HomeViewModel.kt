@@ -3,7 +3,7 @@ package com.battleship.android.app.home.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.battleship.android.app.home.model.CheckServer
-import com.battleship.android.websocketclient.WebSocket
+import com.battleship.android.websocketclient.WebSocketBuilder
 
 class HomeViewModel : ViewModel(){
 
@@ -20,7 +20,7 @@ class HomeViewModel : ViewModel(){
     }
 
     private fun checkServer(address: String, port: Int, onSuccess: ()-> Unit, onFailure: (Exception)->Unit){
-        val checkServer = CheckServer(WebSocket.createClient(address, port),{
+        val checkServer = CheckServer(WebSocketBuilder.createClient(address, port),{
             it.disconnect()
             onSuccess.invoke()
         }, {
