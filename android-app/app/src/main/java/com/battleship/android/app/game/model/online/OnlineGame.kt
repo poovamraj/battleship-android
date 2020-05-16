@@ -1,5 +1,6 @@
 package com.battleship.android.app.game.model.online
 
+import android.util.Log
 import com.battleship.android.app.common.runOnMainThread
 import com.battleship.android.app.game.model.DamageReport
 import com.battleship.android.app.game.model.Game
@@ -7,18 +8,19 @@ import com.battleship.android.app.game.model.setDamageOnGrid
 import com.battleship.android.websocketclient.GameSocket
 import com.battleship.core.Grid
 import com.battleship.core.Position
+import java.lang.Exception
 
 class OnlineGame(
     private val gameSocket: GameSocket,
     private val oceanGrid: Grid,
     private val targetGrid: Grid,
-): Game, GameSocket.Events {
+) : Game, GameSocket.Events {
 
     private var events: Game.GameEvents? = null
 
-    private var onRoomCreatedSuccessfully: ((Long)-> Unit)? = null
+    private var onRoomCreatedSuccessfully: ((Long) -> Unit)? = null
 
-    private var onJoinRoomError: ((Error)->Unit)? = null
+    private var onJoinRoomError: ((Error) -> Unit)? = null
 
     override fun initializeGame() {
         gameSocket.setEvents(this)
@@ -27,15 +29,15 @@ class OnlineGame(
     }
 
 
-    fun connect(){
+    fun connect() {
         gameSocket.connect()
     }
 
-    fun disconnect(){
+    fun disconnect() {
         gameSocket.disconnect()
     }
 
-    fun createRoom(gridSize: Int, noOfSteps: Int, onRoomCreatedSuccessfully: (Long)->Unit) {
+    fun createRoom(gridSize: Int, noOfSteps: Int, onRoomCreatedSuccessfully: (Long) -> Unit) {
         this.onRoomCreatedSuccessfully = onRoomCreatedSuccessfully
         gameSocket.sendMessage(
             constructCreateRoomProtocol(
@@ -45,7 +47,7 @@ class OnlineGame(
         )
     }
 
-    fun joinRoom(roomId: Long, onJoinRoom: ((Error)->Unit)?){
+    fun joinRoom(roomId: Long, onJoinRoom: ((Error) -> Unit)?) {
         this.onJoinRoomError = onJoinRoom
         gameSocket.sendMessage(
             constructJoinRoomProtocol(
@@ -108,12 +110,10 @@ class OnlineGame(
     }
 
     override fun onMessage(message: String) {
-        val type =
-            getTypeFromMessage(
-                message
-            )
+        Log.d("Received Message", message)
+        val type = getTypeFromMessage(message)
         runOnMainThread {
-            when(type) {
+            when (type) {
 
                 ROOM_CREATION_SUCCESS -> {
                     val room =
@@ -152,12 +152,7 @@ class OnlineGame(
                         parseHitMessage(
                             message
                         )
-                    events?.onBeingFired(
-                        setDamageOnGrid(
-                            getOceanGrid(),
-                            hitPositions
-                        )
-                    )
+                    events?.onBeingFired(setDamageOnGrid(getOceanGrid(), hitPositions))
                 }
 
                 HIT_RESPONSE -> {
@@ -165,10 +160,7 @@ class OnlineGame(
                         parseHitResponse(
                             message
                         )
-                    setDamageOnGrid(
-                        targetGrid,
-                        hitResponse
-                    )
+                    setDamageOnGrid(targetGrid, hitResponse)
                     events?.onReceivingDamageReport(hitResponse)
                 }
 
@@ -178,6 +170,10 @@ class OnlineGame(
 
                 OPPONENT_DISCONNECT -> {
                     events?.onGameInterrupted("Opponent disconnected")
+                }
+
+                else -> {
+                    Log.e("Protocol Unknown", message)
                 }
             }
         }
