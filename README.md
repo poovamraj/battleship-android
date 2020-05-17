@@ -1,5 +1,7 @@
 **Battleship - Android Game**
 
+`d282d6c9adebdbe3add88b3b806a77853151208e` is the last commit with done within the specified timeline, rest of the commits are only to add samples to the README.md
+
 **App**
 
 - MVVM Architecture is strictly followed. This can be visibly seen where just changing the Model layer makes it work for both Bot and Online Game
@@ -49,3 +51,9 @@
 --------
 
 Project uses mono repo style - server is found under folder `server` and android app under the folder `android-app`
+
+--------
+
+**Sample**
+
+![Sample](sample/battleship-1.gif)
